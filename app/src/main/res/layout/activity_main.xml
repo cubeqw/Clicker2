@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    style="@style/AppTheme">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Clicker"
+        android:layout_margin="35dp"
+        android:textSize="30dp"
+        android:layout_centerHorizontal="true"/>
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        app:cardBackgroundColor="@color/colorPrimaryDark"
+        app:cardCornerRadius="25dp"
+        android:padding="6dp"
+        app:cardElevation="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="19dp"
+            android:layout_marginVertical="35dp"
+            android:background="@drawable/edittext"
+            android:padding="17dp"
+            android:maxLines="1"
+            android:textColor="@color/colorPrimary"
+            android:hint="Ссылка для сокращения"
+            android:elevation="1dp"
+            android:id="@+id/link"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:text="Сократить"
+            android:padding="17dp"
+            android:background="@drawable/btn_main"
+            android:textColor="@color/colorAccent"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="20dp"
+            android:layout_gravity="center"
+            android:layout_centerHorizontal="true"
+            android:id="@+id/go"
+            android:onClick="onClickGo"/>
+            <ProgressBar
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:visibility="gone"
+                android:id="@+id/progress"
+                android:layout_margin="20dp"
+                android:layout_gravity="center"
+                />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+
+</RelativeLayout>
