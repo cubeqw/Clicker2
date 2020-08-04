@@ -8,5 +8,5 @@
         android:startColor="@color/colorPrimaryDark" />
     <stroke
         android:color="@color/colorPrimary"
-        android:width="3dp"/>
+        android:width="1dp" />
 </shape>

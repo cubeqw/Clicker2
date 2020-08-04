@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:layout_margin="7dp"
     android:background="@drawable/dialog"
-    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+    >
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="7dp"
@@ -15,23 +15,28 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="7dp"
         android:orientation="horizontal">
-            <ImageView
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_margin="3dp"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                android:id="@+id/favicon"/>
+
+        <ImageView
+            android:layout_width="64px"
+            android:layout_height="64px"
+            android:layout_margin="6dp"
+            android:layout_gravity="center"
+            android:scaleType="fitCenter"
+            android:id="@+id/favicon" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="7dp"
+            android:layout_margin="2dp"
             android:layout_gravity="center"
-            android:textSize="20dp"
+            android:autoSizeMaxTextSize="21dp"
+            android:autoSizeMinTextSize="17dp"
             android:gravity="left"
             android:id="@+id/title"
-            />
+            android:ellipsize="end"
+            android:maxLines="3" />
     </LinearLayout>
     <androidx.cardview.widget.CardView
         android:id="@+id/card"
@@ -53,66 +58,76 @@
             android:scaleType="centerInside"
             android:id="@+id/img_result_qr"/>
     </androidx.cardview.widget.CardView>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
+        android:layout_margin="10dp"
         android:textSize="20dp"
         android:text=""
         android:gravity="center"
         android:typeface="monospace"
-        android:id="@+id/message"
-        />
-    <LinearLayout
-        android:layout_width="wrap_content"
+        android:id="@+id/message" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="7dp"
         android:layout_gravity="center">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn"
-        android:padding="10dp"
-        android:layout_marginVertical="8dp"
-        android:layout_marginHorizontal="28dp"
-        android:id="@+id/share"
-        >
-        <ImageView
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:src="@android:drawable/ic_menu_share"
-            android:layout_marginHorizontal="7dp"
-            />
-        <TextView
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Поделиться"
-            android:textColor="@color/colorPrimary"
-            android:layout_gravity="center"
-            android:gravity="center"/>
+            android:background="@drawable/btn"
+            android:layout_alignParentRight="true"
+            android:layout_margin="18dp"
+            android:padding="8dp"
+            android:id="@+id/share">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_marginHorizontal="5dp"
+                android:src="@drawable/share" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:autoSizeMaxTextSize="13dp"
+                android:autoSizeMinTextSize="10dp"
+                android:layout_height="wrap_content"
+                android:text="Поделиться"
+                android:textColor="@color/colorPrimary"
+                android:layout_gravity="center"
+                android:gravity="center" />
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/btn"
-        android:padding="10dp"
-        android:id="@+id/copy"
-        android:layout_marginVertical="8dp"
-        android:layout_marginHorizontal="28dp"
-        >
-        <ImageView
-            android:layout_width="25dp"
-            android:layout_height="25dp"
-            android:layout_gravity="center"
-            android:layout_marginHorizontal="7dp"
-            android:src="@drawable/copy"/>
-        <TextView
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Копировать"
-            android:layout_gravity="center"
-            android:textColor="@color/colorPrimary"
-            android:gravity="center"/>
-    </LinearLayout>
-    </LinearLayout>
+            android:background="@drawable/btn"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/copy"
+            android:layout_margin="18dp"
+            android:padding="8dp">
+
+            <ImageView
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="center"
+                android:layout_marginHorizontal="5dp"
+                android:src="@drawable/copy" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Копировать"
+                android:layout_gravity="center"
+                android:textColor="@color/colorPrimary"
+                android:autoSizeMaxTextSize="13dp"
+                android:autoSizeMinTextSize="10dp"
+                android:gravity="center" />
+        </LinearLayout>
+    </RelativeLayout>
 </LinearLayout>
