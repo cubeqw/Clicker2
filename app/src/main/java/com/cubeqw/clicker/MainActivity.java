@@ -9,7 +9,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -32,7 +34,13 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import com.squareup.picasso.Picasso;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +48,8 @@ public class MainActivity extends Activity {
     EditText editText;
     Button button;
     ProgressBar progressBar;
+    String title, favicon;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +62,8 @@ public class MainActivity extends Activity {
     public void onClickGo(View v){
         button.setVisibility(View.GONE);
         progressBar.setVisibility(View.VISIBLE);
-        cut_url(editText.getText().toString());
+        Get_URL_Title content= new Get_URL_Title();
+        content.execute(editText.getText().toString());
     }
     public void cut_url(final String s){
             RequestQueue queue = Volley.newRequestQueue(this);
@@ -69,6 +80,16 @@ public class MainActivity extends Activity {
                                 View sheetView = MainActivity.this.getLayoutInflater().inflate(R.layout.url_dialog, null);
                                 mBottomSheetDialog.setContentView(sheetView);
                                 mBottomSheetDialog.show();
+                                TextView title_view=sheetView.findViewById(R.id.title);
+                                title_view.setText(title);
+                                ImageView fav=sheetView.findViewById(R.id.favicon);
+                                String iconURL;
+                                Picasso.get().load("https://"+s+favicon).into(fav);
+                                Log.d("asdasd", title+" https://"+s+favicon);
+                                if (fav.getWidth()==0){
+                                    Picasso.get().load("https://"+favicon).into(fav);
+                                    Log.d("asdasd", title+" https://"+favicon);
+                                }
                                 LinearLayout copy = sheetView.findViewById(R.id.copy);
                                 LinearLayout share = sheetView.findViewById(R.id.share);
                                 TextView message = sheetView.findViewById(R.id.message);
@@ -94,7 +115,7 @@ public class MainActivity extends Activity {
                                         Intent intent=new Intent(Intent.ACTION_SEND);
                                         intent.setType("text/plain");
                                         intent.putExtra(Intent.EXTRA_TEXT,response);
-                                        startActivity(Intent.createChooser(intent, "Поделится"));
+                                        startActivity(Intent.createChooser(intent, "Поделиться"));
                                     }
                                 });
 
@@ -123,4 +144,42 @@ public class MainActivity extends Activity {
                 }
             };
             queue.add(getRequest);
-        }}
+        }
+    class Get_URL_Title extends AsyncTask<String, Void, Void> {
+
+
+        @Override
+        protected Void doInBackground(String... params) {
+            if(params[0].charAt(0)=='h'&&params[0].charAt(1)=='t'&&params[0].charAt(3)=='t'&&params[0].charAt(4)=='p'){}
+            else{params[0]="https://"+params[0];}
+            Document doc = null;
+            try {
+                doc = Jsoup.connect(params[0]).get();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (doc!=null)
+                title = doc.title();
+            Element element = doc.head().select("link[href~=.*\\.(ico|png)]").first();
+            if(element==null){
+
+                element = doc.head().select("meta[itemprop=image]").first();
+                if(element!=null){
+                    favicon = element.attr("content");
+                }
+            }else{
+                favicon = element.attr("href");
+            }
+            try{
+            favicon= favicon.substring(0, favicon.indexOf("?"));}
+            catch (StringIndexOutOfBoundsException e){}
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            cut_url(editText.getText().toString());
+        }
+    }}
