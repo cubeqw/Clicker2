@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -20,15 +21,36 @@ import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.Result;
+
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class QR_Scan extends Activity {
     private CodeScanner mCodeScanner;
+    SharedPreferences sPref;
+    String json;
+    Gson gson;
+    List<Link> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_q_r__scan);
+        json = load("history");
+        GsonBuilder builder = new GsonBuilder();
+        gson = builder.create();
+        if (json.length() > 0) {
+            Type type = new TypeToken<List<Link>>() {
+            }.getType();
+            list = gson.fromJson(json, type);
+        }
         if (ContextCompat.checkSelfPermission(QR_Scan.this, Manifest.permission.CAMERA)
                 == PackageManager.PERMISSION_DENIED) {
             ActivityCompat.requestPermissions(QR_Scan.this, new String[]{Manifest.permission.CAMERA}, 123);
@@ -50,6 +72,12 @@ public class QR_Scan extends Activity {
                         View sheetView = QR_Scan.this.getLayoutInflater().inflate(R.layout.qr_dialog, null);
                         mBottomSheetDialog.setContentView(sheetView);
                         mBottomSheetDialog.show();
+                        Date date = new Date();
+                        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy, hh:mm");
+                        Link link = new Link("true", result.getBarcodeFormat().name(), result.toString(), format.format(date));
+                        list.add(link);
+                        json = gson.toJson(list);
+                        save("history", json);
                         TextView result_view = sheetView.findViewById(R.id.result);
                         result_view.setText(result.toString());
                         LinearLayout copy = sheetView.findViewById(R.id.copy);
@@ -116,5 +144,25 @@ public class QR_Scan extends Activity {
             mCodeScanner.releaseResources();
         }
         super.onPause();
+    }
+
+    void delete() {
+        sPref = getSharedPreferences("sPref", MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.clear();
+        ed.commit();
+    }
+
+    void save(String key, String value) {
+        sPref = getSharedPreferences("sPref", MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(key, value);
+        ed.commit();
+
+    }
+
+    String load(String s) {
+        sPref = getSharedPreferences("sPref", MODE_PRIVATE);
+        return sPref.getString(s, "");
     }
 }

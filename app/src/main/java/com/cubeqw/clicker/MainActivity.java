@@ -5,6 +5,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -26,6 +27,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
@@ -37,7 +41,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends Activity {
@@ -48,6 +57,10 @@ public class MainActivity extends Activity {
     TextView title_view;
     ImageView fav;
     ImageView clear;
+    SharedPreferences sPref;
+    String json;
+    Gson gson;
+    List<Link> list = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +68,14 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         setTitleColor(Color.BLACK);
         editText = findViewById(R.id.link);
+        json = load("history");
+        GsonBuilder builder = new GsonBuilder();
+        gson = builder.create();
+        if (json.length() > 0) {
+            Type type = new TypeToken<List<Link>>() {
+            }.getType();
+            list = gson.fromJson(json, type);
+        }
         button = findViewById(R.id.go);
         progressBar = findViewById(R.id.progress);
         clear = findViewById(R.id.clear);
@@ -97,13 +118,34 @@ public class MainActivity extends Activity {
                         public void onResponse(final String response) {
                             button.setVisibility(View.VISIBLE);
                             progressBar.setVisibility(View.GONE);
-                            if(response.charAt(0)!='<'){
-                                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(MainActivity .this, R.style.SheetDialog);
+                            if(response.charAt(0)!='<') {
+                                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(MainActivity.this, R.style.SheetDialog);
                                 View sheetView = MainActivity.this.getLayoutInflater().inflate(R.layout.url_dialog, null);
                                 mBottomSheetDialog.setContentView(sheetView);
                                 mBottomSheetDialog.show();
                                 title_view = sheetView.findViewById(R.id.title);
                                 title_view.setText(title);
+                                title_view.addTextChangedListener(new TextWatcher() {
+                                    @Override
+                                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                                    }
+
+                                    @Override
+                                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                        Date date = new Date();
+                                        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy, hh:mm");
+                                        Link link = new Link("false", title, response, format.format(date));
+                                        list.add(link);
+                                        json = gson.toJson(list);
+                                        save("history", json);
+                                    }
+
+                                    @Override
+                                    public void afterTextChanged(Editable editable) {
+
+                                    }
+                                });
                                 fav = sheetView.findViewById(R.id.favicon);
                                 LinearLayout copy = sheetView.findViewById(R.id.copy);
                                 LinearLayout share = sheetView.findViewById(R.id.share);
@@ -235,5 +277,25 @@ public class MainActivity extends Activity {
             } catch (IllegalArgumentException e) {
             }
         }
+    }
+
+    void delete() {
+        sPref = getSharedPreferences("sPref", MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.clear();
+        ed.commit();
+    }
+
+    void save(String key, String value) {
+        sPref = getSharedPreferences("sPref", MODE_PRIVATE);
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(key, value);
+        ed.commit();
+
+    }
+
+    String load(String s) {
+        sPref = getSharedPreferences("sPref", MODE_PRIVATE);
+        return sPref.getString(s, "");
     }
 }
