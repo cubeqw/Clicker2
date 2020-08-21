@@ -15,7 +15,11 @@
         android:layout_margin="35dp"
         android:textSize="30dp"
         android:textColor="@color/colorPrimary"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
+
+    <include layout="@layout/history_item" />
+
     <androidx.cardview.widget.CardView
         android:id="@+id/card"
         android:layout_width="match_parent"
